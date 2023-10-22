@@ -13,8 +13,8 @@ Welcome to the DIY Pedestrian Detection app! Utilizing the power of YOLOv8 and t
 
 1. 📦 Clone the repository:
    ```bash
-   git clone https://github.com/mohamad-tohidi/DIY_TESLA
-   cd DIY_TESLA
+   git clone https://github.com/mohamad-tohidi/Pedestrian_Detection
+   cd Pedestrian_Detection
       
 2.🧰 Install the required packages:
    ```bash
