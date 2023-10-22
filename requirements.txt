@@ -1,13 +1,10 @@
 numpy==1.25.0
 opencv_contrib_python==4.8.1.78
-opencv_python==4.7.0.72
 opencv_python==4.8.1.78
 opencv_python_headless==4.8.1.78
-Pillow==9.5.0
-Pillow==10.0.1
 Pillow==10.1.0
 pygame==2.5.2
 Shapely==2.0.2
 supervision==0.16.0
 ultralytics==8.0.152
-ultralytics==8.0.198
+
