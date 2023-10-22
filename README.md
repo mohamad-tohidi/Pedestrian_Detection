@@ -12,11 +12,11 @@ Clone the repository:
 
 bash
 Copy code
-git clone [YOUR-GITHUB-REPO-LINK]
-cd [YOUR-REPO-DIRECTORY]
+git clone https://github.com/mohamad-tohidi/DIY_TESLA
+cd DIY_TESLA
 Install the required packages:
 
-bash
+bash'''
 Copy code
 pip install -r requirements.txt
 Run the application (refer to the usage section or README for further instructions).
