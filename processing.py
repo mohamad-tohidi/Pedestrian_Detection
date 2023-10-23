@@ -14,7 +14,7 @@ warning_sound = pygame.mixer.Sound('warning1.wav')
 
 MODEL_PATH = 'yolov8n_openvino_model/'
 CLASS_ID = 0
-SKIP_RATE = 0
+SKIP_RATE = 1
 frame_count = 0
 
 def process_frame(frame, _):
@@ -80,7 +80,7 @@ def process_webcam_with_annotations(polygon_coords):
     polygon = np.array(polygon_coords)
     zone = sv.PolygonZone(polygon=polygon, frame_resolution_wh=frame_resolution_wh)
     box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
-    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
+    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=6, text_thickness=1, text_scale=1)
 
     # Create results directory if not exists
     if not os.path.exists("results"):
