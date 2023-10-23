@@ -24,6 +24,7 @@ def resize_image(image, max_width=MAX_WIDTH, max_height=MAX_HEIGHT):
 
     return image.resize((new_width, new_height), Image.LANCZOS)
 
+
 is_webcam_mode = False  # Flag to check if webcam mode is active
 
 def load_video():
@@ -80,26 +81,51 @@ def on_canvas_click(event):
     video_canvas.create_oval(x-2, y-2, x+2, y+2, fill="red", width=2)
     polygon_points.append([x, y])
 
+# def rescale_coordinates(coords):
+#     """Rescale coordinates to original size."""
+#     width_ratio = MAX_WIDTH / video_canvas.winfo_width()
+#     height_ratio = MAX_HEIGHT / video_canvas.winfo_height()
+#
+#     # Assuming uniform scaling for both width and height
+#     scaling_factor = min(width_ratio, height_ratio)
+#
+#     return [[int(x / scaling_factor) for x in point] for point in coords]
+
 def rescale_coordinates(coords):
     """Rescale coordinates to original size."""
-    width_ratio = MAX_WIDTH / video_canvas.winfo_width()
-    height_ratio = MAX_HEIGHT / video_canvas.winfo_height()
 
-    # Assuming uniform scaling for both width and height
-    scaling_factor = min(width_ratio, height_ratio)
+    # Calculate the aspect ratio of the original image/video
+    cap = cv2.VideoCapture(video_path)
+    ret, frame = cap.read()
+    original_height, original_width, _ = frame.shape
+    cap.release()
 
-    return [[int(x / scaling_factor) for x in point] for point in coords]
+    aspect_ratio = original_width / original_height
+
+    # Calculate the width and height of the resized video as displayed on the canvas
+    if original_width > original_height:
+        new_width = MAX_WIDTH
+        new_height = int(new_width / aspect_ratio)
+    else:
+        new_height = MAX_HEIGHT
+        new_width = int(new_height * aspect_ratio)
+
+    width_ratio = original_width / new_width
+    height_ratio = original_height / new_height
+
+    # Scale the coordinates
+    return [[int(x * width_ratio), int(y * height_ratio)] for x, y in coords]
 
 
 def start_processing():
-    global video_path, polygon_points, is_webcam_mode, cap
+    global video_path, polygon_points, is_webcam_mode, cap, resize_ratio
     if is_webcam_mode:
         cap.release()  # Release the webcam
         rescaled_polygon = rescale_coordinates(polygon_points)
         root.destroy()
         processing.process_webcam_with_annotations(rescaled_polygon)
     elif video_path and polygon_points:
-        rescaled_polygon = rescale_coordinates(polygon_points, resize_ratio)
+        rescaled_polygon = rescale_coordinates(polygon_points)
         root.destroy()
         processing.process_video_with_annotations(video_path, rescaled_polygon)
 

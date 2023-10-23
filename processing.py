@@ -7,14 +7,14 @@ from ultralytics import YOLO
 import cv2
 import pygame
 from shapely.geometry import Point, Polygon
-
+import datetime
 
 pygame.mixer.init()
 warning_sound = pygame.mixer.Sound('warning1.wav')
 
 MODEL_PATH = 'yolov8n_openvino_model/'
 CLASS_ID = 0
-SKIP_RATE = 8
+SKIP_RATE = 0
 frame_count = 0
 
 def process_frame(frame, _):
@@ -55,8 +55,8 @@ def process_video_with_annotations(video_path, polygon_coords):
 
     polygon = np.array(polygon_coords)
     zone = sv.PolygonZone(polygon=polygon, frame_resolution_wh=video_info.resolution_wh)
-    box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
-    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
+    box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=2, text_scale=2)
+    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=4, text_thickness=2, text_scale=2)
 
     # Get the output video path
     output_video_path = video_path.rsplit('.', 1)[0] + "-results.mp4"
@@ -82,6 +82,18 @@ def process_webcam_with_annotations(polygon_coords):
     box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
     zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
 
+    # Create results directory if not exists
+    if not os.path.exists("results"):
+        os.makedirs("results")
+
+    # Generate a unique filename based on current timestamp
+    current_time = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_filename = f'results/webcam_output_{current_time}.avi'
+
+    # Initialize VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter(output_filename, fourcc, 20.0, frame_resolution_wh)
+
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -89,6 +101,9 @@ def process_webcam_with_annotations(polygon_coords):
 
         # Process the frame
         processed_frame = process_frame(frame, None)
+
+        # Write the processed frame to the output video
+        out.write(processed_frame)
 
         # Show the processed frame
         cv2.imshow("Processed Webcam Feed", processed_frame)
@@ -98,4 +113,5 @@ def process_webcam_with_annotations(polygon_coords):
             break
 
     cap.release()
+    out.release()  # Release the VideoWriter object
     cv2.destroyAllWindows()
