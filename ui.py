@@ -94,12 +94,27 @@ def on_canvas_click(event):
 def rescale_coordinates(coords):
     """Rescale coordinates to original size."""
 
-    # Calculate the aspect ratio of the original image/video
-    cap = cv2.VideoCapture(video_path)
+    global cap, is_webcam_mode
+
+    if is_webcam_mode:
+        # If in webcam mode, open the default camera
+        cap = cv2.VideoCapture(0)
+    else:
+        # If not in webcam mode, use the previously set video_path
+        cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        print("Failed to open the video or webcam.")
+        return None
+
     ret, frame = cap.read()
-    original_height, original_width, _ = frame.shape
     cap.release()
 
+    if not ret or frame is None:
+        print("Failed to read frame. Check the video or webcam source.")
+        return None
+
+    original_height, original_width, _ = frame.shape
     aspect_ratio = original_width / original_height
 
     # Calculate the width and height of the resized video as displayed on the canvas
@@ -115,6 +130,7 @@ def rescale_coordinates(coords):
 
     # Scale the coordinates
     return [[int(x * width_ratio), int(y * height_ratio)] for x, y in coords]
+
 
 
 def start_processing():
