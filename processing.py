@@ -1,5 +1,3 @@
-# processing.py
-
 import os
 import numpy as np
 import supervision as sv
@@ -8,6 +6,7 @@ import cv2
 import pygame
 from shapely.geometry import Point, Polygon
 import datetime
+from processing_cython import process_frame
 
 pygame.mixer.init()
 warning_sound = pygame.mixer.Sound('warning1.wav')
@@ -17,35 +16,6 @@ CLASS_ID = 0
 SKIP_RATE = 1
 frame_count = 0
 
-def process_frame(frame, _):
-    global frame_count
-
-    if frame_count % SKIP_RATE == 0:
-        results = model(frame, imgsz=384)[0]
-        detections = sv.Detections.from_yolov8(results)
-        detections = detections[detections.class_id == CLASS_ID]
-
-        # Convert the polygon_coords to a Shapely Polygon
-        polygon_shape = Polygon(zone.polygon)
-
-        # Loop through each detection to check if it's inside the danger zone
-        for bbox in detections.xyxy:
-            x1, y1, x2, y2 = bbox
-            x_center = (x1 + x2) / 2
-            y_center = (y1 + y2) / 2
-            point = Point(x_center, y_center)
-
-            if polygon_shape.contains(point):
-                warning_sound.play()  # Play the preloaded warning sound instantly
-                break
-
-        zone.trigger(detections=detections)
-        frame = box_annotator.annotate(scene=frame, detections=detections)
-
-    frame = zone_annotator.annotate(scene=frame)
-
-    frame_count += 1
-    return frame
 
 def process_video_with_annotations(video_path, polygon_coords):
     global model, zone, box_annotator, zone_annotator
@@ -60,7 +30,8 @@ def process_video_with_annotations(video_path, polygon_coords):
 
     # Get the output video path
     output_video_path = video_path.rsplit('.', 1)[0] + "-results.mp4"
-    sv.process_video(source_path=video_path, target_path=output_video_path, callback=process_frame)
+    sv.process_video(source_path=video_path, target_path=output_video_path,
+                     callback=lambda frame, _: process_frame(frame, _, model, zone, box_annotator, zone_annotator, warning_sound, frame_count, SKIP_RATE, CLASS_ID))
 
 def process_webcam_with_annotations(polygon_coords):
     global model, zone, box_annotator, zone_annotator, frame_count
@@ -100,7 +71,7 @@ def process_webcam_with_annotations(polygon_coords):
             break
 
         # Process the frame
-        processed_frame = process_frame(frame, None)
+        processed_frame = process_frame(frame, None, model, zone, box_annotator, zone_annotator, warning_sound, frame_count, SKIP_RATE, CLASS_ID)
 
         # Write the processed frame to the output video
         out.write(processed_frame)
