@@ -35,11 +35,9 @@ cpdef np.ndarray[np.uint8_t, ndim=3] process_frame(np.ndarray[np.uint8_t, ndim=3
         # Loop through each detection to check if it's inside the danger zone
         for bbox in detections.xyxy:
             x1, y1, x2, y2 = bbox
-            x_center = (x1 + x2) / 2
-            y_center = (y1 + y2) / 2
-            point = Point(x_center, y_center)
+            bbox_shape = Polygon([(x1, y1), (x1, y2), (x2, y2), (x2, y1)])
 
-            if polygon_shape.contains(point):
+            if polygon_shape.intersects(bbox_shape):
                 current_time = dt.now().timestamp()  # Use the renamed datetime class
                 # Check if the sound was played in the last 10 seconds
                 if current_time - last_sound_played_at > 10:
