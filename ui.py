@@ -1,5 +1,4 @@
 # ui.py
-
 import tkinter as tk
 from tkinter import filedialog
 import cv2
@@ -13,19 +12,15 @@ MAX_WIDTH = 640
 MAX_HEIGHT = 480
 
 def resize_image(image, max_width=MAX_WIDTH, max_height=MAX_HEIGHT):
-    global resize_ratio  # Declare resize_ratio as global to access it later
-
+    global resize_ratio
     width_ratio = max_width / image.width
     height_ratio = max_height / image.height
     resize_ratio = min(width_ratio, height_ratio)
-
     new_width = int(image.width * resize_ratio)
     new_height = int(image.height * resize_ratio)
-
     return image.resize((new_width, new_height), Image.LANCZOS)
 
-
-is_webcam_mode = False  # Flag to check if webcam mode is active
+is_webcam_mode = False
 
 def load_video():
     global video_path, is_webcam_mode, cap
@@ -146,25 +141,48 @@ def start_processing():
         processing.process_video_with_annotations(video_path, rescaled_polygon)
 
 
+
+
+# GUI Styling
+DARK_COLOR = "#2E2E2E"
+LIGHT_COLOR = "#6E6E6E"
+BUTTON_COLOR = "#99ffff"  # Pale blue color
+TEXT_COLOR = "#FFFFFF"
+
+
 root = tk.Tk()
 root.title("Video Annotator")
+root.configure(bg=DARK_COLOR)
 
-control_frame = tk.Frame(root)
+# Custom button styling with rounded edges
+style = {
+    "bg": BUTTON_COLOR,
+    "fg": TEXT_COLOR,
+    "borderwidth": 0,
+    "highlightthickness": 0,
+    "font": ("Arial", 10, "bold"),
+    "activebackground": LIGHT_COLOR,
+    "activeforeground": TEXT_COLOR
+}
+button_style = {**style, "relief": tk.RAISED, "padx": 10, "pady": 5}
+
+control_frame = tk.Frame(root, bg=DARK_COLOR)
 control_frame.pack(pady=20)
 
-toggle_mode_button = tk.Button(control_frame, text="Toggle Webcam/Video Mode", command=toggle_input_mode)
+toggle_mode_button = tk.Button(control_frame, text="Toggle Webcam/Video Mode", command=toggle_input_mode, **button_style)
 toggle_mode_button.grid(row=0, column=2, padx=10)
 
-video_input_label = tk.Label(control_frame, text="No video selected.")
+video_input_label = tk.Label(control_frame, text="No video selected.", bg=DARK_COLOR, fg=TEXT_COLOR)
 video_input_label.grid(row=0, column=0, padx=10)
-video_input_button = tk.Button(control_frame, text="Load Video", command=load_video)
+
+video_input_button = tk.Button(control_frame, text="Load Video", command=load_video, **button_style)
 video_input_button.grid(row=0, column=1, padx=10)
 
 video_canvas = tk.Canvas(root, bg="white", width=MAX_WIDTH, height=MAX_HEIGHT)
 video_canvas.pack(pady=20)
 video_canvas.bind("<Button-1>", on_canvas_click)
 
-start_button = tk.Button(root, text="Start Processing", command=start_processing)
+start_button = tk.Button(root, text="Start Processing", command=start_processing, **button_style)
 start_button.pack(pady=20)
 
 root.mainloop()
