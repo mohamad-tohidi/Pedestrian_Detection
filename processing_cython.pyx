@@ -40,7 +40,7 @@ cpdef np.ndarray[np.uint8_t, ndim=3] process_frame(np.ndarray[np.uint8_t, ndim=3
             if polygon_shape.intersects(bbox_shape):
                 current_time = dt.now().timestamp()  # Use the renamed datetime class
                 # Check if the sound was played in the last 10 seconds
-                if current_time - last_sound_played_at > 10:
+                if current_time - last_sound_played_at > 5:
                     warning_sound.play()  # Play the preloaded warning sound
                     last_sound_played_at = current_time  # Update the timestamp
                     break
