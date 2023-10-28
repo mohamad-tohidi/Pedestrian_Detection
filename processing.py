@@ -11,9 +11,9 @@ from processing_cython import process_frame
 pygame.mixer.init()
 warning_sound = pygame.mixer.Sound('warning1.wav')
 
-MODEL_PATH = 'yolov8n_openvino_model/'
+MODEL_PATH = 'DetectionModel.onnx'
 CLASS_ID = 0
-SKIP_RATE = 1
+SKIP_RATE = 5
 frame_count = 0
 
 

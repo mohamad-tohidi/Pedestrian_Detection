@@ -2,7 +2,7 @@ numpy==1.25.0
 opencv_contrib_python==4.8.1.78
 opencv_python==4.8.1.78
 opencv_python_headless==4.8.1.78
-cython==3.0.3
+Pillow==9.5.0
 Pillow==10.0.1
 pygame==2.5.2
 Shapely==2.0.2

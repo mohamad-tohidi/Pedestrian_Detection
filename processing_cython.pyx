@@ -25,7 +25,7 @@ cpdef np.ndarray[np.uint8_t, ndim=3] process_frame(np.ndarray[np.uint8_t, ndim=3
     global last_sound_played_at
 
     if frame_count % SKIP_RATE == 0:
-        results = model(frame, imgsz=384)[0]
+        results = model(frame, imgsz=224,classes=0,stream_buffer=True,conf=0.35)[0]
         detections = sv.Detections.from_yolov8(results)
         detections = detections[detections.class_id == CLASS_ID]
 
