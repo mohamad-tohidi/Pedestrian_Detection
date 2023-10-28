@@ -12,3 +12,4 @@ openvino==2023.1.0
 openvino-dev==2023.1.0
 openvino-telemetry==2023.1.0
 tk==0.1.0
+onnxruntime==1.16.1
